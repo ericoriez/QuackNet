@@ -3,7 +3,14 @@
 {% block title %}Quack index{% endblock %}
 
 {% block body %}
+
     <h1>Quack index</h1>
+
+    {% if app.user %}
+        <div class="mb-3">
+            {{ app.user.duckname }}, <a href="{{ path('app_logout') }}">Logout</a>
+        </div>
+    {% endif %}
 
     <table class="table">
         <thead>
