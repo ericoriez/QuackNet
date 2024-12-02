@@ -16,6 +16,10 @@
                 <td>{{ quack.content }}</td>
             </tr>
             <tr>
+                <th>Auteur :</th>
+                <td>{{ quack.author.duckname }}</td>
+            </tr>
+            <tr>
                 <th>Created_at</th>
                 <td>{{ quack.createdAt ? quack.createdAt|date('Y-m-d H:i:s') : '' }}</td>
             </tr>

@@ -30,6 +30,9 @@ final class QuackController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $quack->setAuthor($this->getUser());
+            $quack->setCreatedAt(new \DateTime());
+
             $entityManager->persist($quack);
             $entityManager->flush();
 
@@ -37,8 +40,8 @@ final class QuackController extends AbstractController
         }
 
         return $this->render('quack/new.html.twig', [
-            'quack' => $quack,
-            'form' => $form,
+            // 'quack' => $quack,
+            'form' => $form->createView(),
         ]);
     }
 

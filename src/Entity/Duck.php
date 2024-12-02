@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\DuckRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -42,6 +44,17 @@ class Duck implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255)]
     private ?string $duckname = null;
+
+    /**
+     * @var Collection<int, Quack>
+     */
+    #[ORM\OneToMany(targetEntity: Quack::class, mappedBy: 'author')]
+    private Collection $quacks;
+
+    public function __construct()
+    {
+        $this->quacks = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -150,6 +163,36 @@ class Duck implements UserInterface, PasswordAuthenticatedUserInterface
     public function setDuckname(string $duckname): static
     {
         $this->duckname = $duckname;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Quack>
+     */
+    public function getQuacks(): Collection
+    {
+        return $this->quacks;
+    }
+
+    public function addQuack(Quack $quack): static
+    {
+        if (!$this->quacks->contains($quack)) {
+            $this->quacks->add($quack);
+            $quack->setAuthor($this);
+        }
+
+        return $this;
+    }
+
+    public function removeQuack(Quack $quack): static
+    {
+        if ($this->quacks->removeElement($quack)) {
+            // set the owning side to null (unless already changed)
+            if ($quack->getAuthor() === $this) {
+                $quack->setAuthor(null);
+            }
+        }
 
         return $this;
     }
