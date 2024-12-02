@@ -1,0 +1,27 @@
+h1{
+    color: #B0413E;
+    text-align: center;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+#name{
+    display: flex;
+    justify-content: end;
+
+
+}
+button {
+    transition-duration: 0.4s;
+    background-color: forestgreen;
+    border-radius: 5px;
+    border:none;
+}
+
+button:hover {
+    background-color: indianred; /* Green */
+    color: indianred;
+}
+a{
+    color: white;
+    text-decoration: none;
+}

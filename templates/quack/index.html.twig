@@ -1,23 +1,31 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Quack index{% endblock %}
+{% block title %}Quacks{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/quack/index.css') }}"
+{% endblock %}
 
 {% block body %}
 
     <h1>CoinsCoins</h1>
 
     {% if app.user %}
-        <div class="mb-3">
-            {{ app.user.duckname }}, <a href="{{ path('app_logout') }}">Logout</a>
+        <div id="name">
+           Bonjour : {{ app.user.duckname }} <button><a href="{{ path('app_logout') }}"><i class="fa-solid fa-right-from-bracket"></i>Logout</a></button>
         </div>
     {% endif %}
 
+    <button><a href="{{ path('app_quack_new') }}">Create new</a></button>
     <table class="table">
         <thead>
             <tr>
-                <th>Id</th>
+{#                <th>Id</th>#}
                 <th>Auteur</th>
                 <th>Content</th>
+                <th>Photo</th>
+                <th>Tags</th>
                 <th>Created_at</th>
                 <th>actions</th>
             </tr>
@@ -25,7 +33,7 @@
         <tbody>
         {% for quack in quacks %}
             <tr>
-                <td>{{ quack.id }}</td>
+{#                <td>{{ quack.id }}</td>#}
                 <td>
 
                     {% if quack.author %}
@@ -46,9 +54,10 @@
                     {% endfor %}
                 </td>
                 <td>{{ quack.createdAt ? quack.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+
                 <td>
-                    <a href="{{ path('app_quack_show', {'id': quack.id}) }}">show</a>
-                    <a href="{{ path('app_quack_edit', {'id': quack.id}) }}">edit</a>
+                    <button><a href="{{ path('app_quack_show', {'id': quack.id}) }}">show</a></button>
+                    <button><a href="{{ path('app_quack_edit', {'id': quack.id}) }}">edit</a></button>
                 </td>
             </tr>
         {% else %}
@@ -59,5 +68,4 @@
         </tbody>
     </table>
 
-    <a href="{{ path('app_quack_new') }}">Create new</a>
 {% endblock %}
