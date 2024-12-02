@@ -35,6 +35,16 @@
                     {% endif %}
                 </td>
                 <td>{{ quack.content }}</td>
+                <td>
+                    {% if quack.photo %}
+                        <img src="{{ asset('uploads/' ~ quack.photo) }}" alt="Photo du quack" style="max-width: 300px;">
+                    {% endif %}
+                </td>
+                <td>Tags :
+                    {% for tag in quack.tags %}
+                        <span>#{{ tag.name }}</span>
+                    {% endfor %}
+                </td>
                 <td>{{ quack.createdAt ? quack.createdAt|date('Y-m-d H:i:s') : '' }}</td>
                 <td>
                     <a href="{{ path('app_quack_show', {'id': quack.id}) }}">show</a>

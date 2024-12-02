@@ -23,6 +23,10 @@
                 <th>Created_at</th>
                 <td>{{ quack.createdAt ? quack.createdAt|date('Y-m-d H:i:s') : '' }}</td>
             </tr>
+            <tr>{% if quack.photo %}
+                <img src="{{ asset('uploads/' ~ quack.photo) }}" alt="Photo du quack" style="max-width: 300px;">
+            {% endif %}
+            </tr>
         </tbody>
     </table>
 

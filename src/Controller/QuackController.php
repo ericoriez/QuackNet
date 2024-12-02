@@ -33,6 +33,16 @@ final class QuackController extends AbstractController
             $quack->setAuthor($this->getUser());
             $quack->setCreatedAt(new \DateTime());
 
+            $photoFile = $form->get('photo')->getData();
+            if ($photoFile) {
+                $newFilename = uniqid() . '.' . $photoFile->guessExtension();
+                $photoFile->move(
+                    $this->getParameter('uploads_directory'), // Configure ce paramètre dans services.yaml
+                    $newFilename
+                );
+                $quack->setPhoto($newFilename);
+            }
+
             $entityManager->persist($quack);
             $entityManager->flush();
 
@@ -40,7 +50,7 @@ final class QuackController extends AbstractController
         }
 
         return $this->render('quack/new.html.twig', [
-            // 'quack' => $quack,
+            'quack' => $quack,
             'form' => $form->createView(),
         ]);
     }
