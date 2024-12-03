@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Quack;
+use App\Form\CommentType;
 use App\Form\QuackType;
 use App\Repository\QuackRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -55,11 +56,29 @@ final class QuackController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_quack_show', methods: ['GET'])]
-    public function show(Quack $quack): Response
+    #[Route('/{id}', name: 'app_quack_show', methods: ['GET', 'POST'])]
+    public function show(Request $request, Quack $quack, EntityManagerInterface $entityManager): Response
     {
+        // Création d'un nouveau commentaire (quack enfant)
+        $comment = new Quack();
+        $comment->setParent($quack); // Définit le quack parent
+        $comment->setAuthor($this->getUser()); // Définit l'utilisateur connecté comme auteur
+
+        // Formulaire pour le commentaire
+        $form = $this->createForm(CommentType::class, $comment);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($comment);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_quack_show', ['id' => $quack->getId()]);
+        }
+
+        // Rendu de la page avec le formulaire de commentaire
         return $this->render('quack/show.html.twig', [
-            'quack' => $quack,
+            'quack' => $quack, // Quack principal
+            'form' => $form->createView(), // Formulaire pour le commentaire
         ]);
     }
 
@@ -81,14 +100,41 @@ final class QuackController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_quack_delete', methods: ['POST'])]
+    #[Route('/{id}/delete', name: 'app_quack_delete', methods: ['POST'])]
     public function delete(Request $request, Quack $quack, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$quack->getId(), $request->getPayload()->getString('_token'))) {
-            $entityManager->remove($quack);
-            $entityManager->flush();
+        $user = $this->getUser();
+
+        // Si c'est un commentaire (il a un parent)
+        if ($quack->getParent()) {
+            $canDelete = $quack->getAuthor() === $user || $quack->getParent()->getAuthor() === $user;
+
+            if (!$canDelete) {
+                throw $this->createAccessDeniedException('Vous n\'êtes pas autorisé à supprimer ce commentaire.');
+            }
+
+            if ($this->isCsrfTokenValid('delete'.$quack->getId(), $request->request->get('_token'))) {
+                $entityManager->remove($quack);
+                $entityManager->flush();
+
+                return $this->redirectToRoute('app_quack_show', ['id' => $quack->getParent()->getId()]);
+            }
+        } else {
+            // Si c'est un post principal
+            $canDelete = $quack->getAuthor() === $user;
+
+            if (!$canDelete) {
+                throw $this->createAccessDeniedException('Vous n\'êtes pas autorisé à supprimer ce post.');
+            }
+
+            if ($this->isCsrfTokenValid('delete'.$quack->getId(), $request->request->get('_token'))) {
+                $entityManager->remove($quack);
+                $entityManager->flush();
+
+                return $this->redirectToRoute('app_quack_index');
+            }
         }
 
-        return $this->redirectToRoute('app_quack_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_quack_index');
     }
 }

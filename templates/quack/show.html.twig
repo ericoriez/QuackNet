@@ -1,38 +1,38 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Quack{% endblock %}
+{% block title %}Détail du CoinCoin{% endblock %}
 
 {% block body %}
-    <h1>Quack</h1>
+    <h2>{{ quack.content }}</h2>
+    <p>Auteur : {{ quack.author ? quack.author.duckname : 'Anonyme' }}</p>
+    <p>Publié le : {{ quack.createdAt|date('d/m/Y H:i') }}</p>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ quack.id }}</td>
-            </tr>
-            <tr>
-                <th>Content</th>
-                <td>{{ quack.content }}</td>
-            </tr>
-            <tr>
-                <th>Auteur :</th>
-                <td>{{ quack.author.duckname }}</td>
-            </tr>
-            <tr>
-                <th>Created_at</th>
-                <td>{{ quack.createdAt ? quack.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>{% if quack.photo %}
-                <img src="{{ asset('uploads/' ~ quack.photo) }}" alt="Photo du quack" style="max-width: 300px;">
+    {% if quack.photo %}
+        <img src="{{ asset('uploads/' ~ quack.photo) }}" alt="Photo du quack" style="max-width: 300px;">
+    {% endif %}
+
+    <h2>Commentaires</h2>
+    {% for reply in quack.replies %}
+        <div class="comment">
+            <p>{{ reply.content }}</p>
+            <small>
+                Par : {{ reply.author ? reply.author.duckname : 'Anonyme' }}
+                - {{ reply.createdAt|date('Y-m-d H:i:s') }}
+            </small>
+            {% if app.user and (reply.author == app.user or quack.author == app.user) %}
+                <form method="post" action="{{ path('app_quack_delete', {'id': reply.id}) }}" style="display:inline;">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ reply.id) }}">
+                    <button class="btn btn-danger btn-sm">Supprimer</button>
+                </form>
             {% endif %}
-            </tr>
-        </tbody>
-    </table>
+        </div>
+    {% endfor %}
 
-    <a href="{{ path('app_quack_index') }}">back to list</a>
 
-    <a href="{{ path('app_quack_edit', {'id': quack.id}) }}">edit</a>
 
-    {{ include('quack/_delete_form.html.twig') }}
+    <h2>Ajouter un commentaire</h2>
+    {{ form_start(form) }}
+    {{ form_row(form.content) }}
+    <button class="btn btn-primary">Envoyer</button>
+    {{ form_end(form) }}
 {% endblock %}

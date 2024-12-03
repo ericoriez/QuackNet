@@ -9,11 +9,12 @@
 
 {% block body %}
 
-    <h1>CoinsCoins</h1>
+{#    <h1>CoinsCoins</h1>#}
 
     {% if app.user %}
         <div id="name">
-           Bonjour : {{ app.user.duckname }} <button><a href="{{ path('app_logout') }}"><i class="fa-solid fa-right-from-bracket"></i>Logout</a></button>
+            <h2>Hello {{ app.user.duckname }} </h2>
+            <button><a href="{{ path('app_logout') }}"><i class="fa-solid fa-right-from-bracket"></i>Logout</a></button>
         </div>
     {% endif %}
 
@@ -60,6 +61,27 @@
                     <button><a href="{{ path('app_quack_edit', {'id': quack.id}) }}">edit</a></button>
                 </td>
             </tr>
+{#            #}{# Afficher les commentaires liés (replies) #}
+{#            <tr>#}
+{#                <td colspan="6">#}
+{#                    <div class="comments">#}
+{#                        <h4>Commentaires :</h4>#}
+{#                        {% if quack.replies|length > 0 %}#}
+{#                            {% for reply in quack.replies %}#}
+{#                                <div class="comment">#}
+{#                                    <p>{{ reply.content }}</p>#}
+{#                                    <small>#}
+{#                                        Par : {{ reply.author ? reply.author.duckname : 'Utilisateur inconnu' }}#}
+{#                                        - {{ reply.createdAt|date('Y-m-d H:i:s') }}#}
+{#                                    </small>#}
+{#                                </div>#}
+{#                            {% endfor %}#}
+{#                        {% else %}#}
+{#                            <p>Aucun commentaire pour ce quack.</p>#}
+{#                        {% endif %}#}
+{#                    </div>#}
+{#                </td>#}
+{#            </tr>#}
         {% else %}
             <tr>
                 <td colspan="4">no records found</td>

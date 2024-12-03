@@ -1,3 +1,28 @@
 body {
-    background-color: lightgrey;
+    background-color: #C3D9DD;
+
+}
+.container{
+    /*background-color: #B0413E;*/
+}
+header{
+    display: flex;
+    justify-content: center;
+}
+nav{
+
+    display: flex;
+    justify-content: end;
+
+}
+nav ul{
+    display: flex;
+    justify-content: center;
+}
+
+#logo{
+    width: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: 20px;
 }
