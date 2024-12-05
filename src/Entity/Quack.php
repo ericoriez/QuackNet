@@ -44,6 +44,10 @@ class Quack
     #[ORM\OneToMany(targetEntity: self::class, mappedBy: 'parent')]
     private Collection $replies;
 
+    #[ORM\Column(type: 'boolean')]
+    private bool $isModerated = false;
+
+
     public function __construct()
     {
         $this->created_at = new \DateTime();
@@ -170,4 +174,17 @@ class Quack
 
         return $this;
     }
+
+    public function isModerated(): bool
+    {
+        return $this->isModerated;
+    }
+
+    public function setModerated(bool $isModerated): self
+    {
+        $this->isModerated = $isModerated;
+
+        return $this;
+    }
+
 }

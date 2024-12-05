@@ -19,7 +19,7 @@ final class QuackController extends AbstractController
     public function index(QuackRepository $quackRepository): Response
     {
         return $this->render('quack/index.html.twig', [
-            'quacks' => $quackRepository->findAll(),
+            'quacks' => $quackRepository->findVisibleQuacks(),
         ]);
     }
 
@@ -134,6 +134,21 @@ final class QuackController extends AbstractController
                 return $this->redirectToRoute('app_quack_index');
             }
         }
+
+        return $this->redirectToRoute('app_quack_index');
+    }
+
+
+    #[Route('/{id}/moderate', name: 'app_quack_moderate', methods: ['POST'])]
+    public function moderate(Request $request, Quack $quack, EntityManagerInterface $entityManager): Response
+    {
+        // Vérifie si l'utilisateur peut modérer
+        $this->denyAccessUnlessGranted('QUACK_MODERATE', $quack);
+
+        $quack->setModerated(true); // Masque le quack
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Le quack a été masqué avec succès.');
 
         return $this->redirectToRoute('app_quack_index');
     }

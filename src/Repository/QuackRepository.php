@@ -43,6 +43,15 @@ class QuackRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function findVisibleQuacks(): array
+    {
+        return $this->createQueryBuilder('q')
+            ->andWhere('q.isModerated = false')
+            ->orderBy('q.created_at', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
 //    /**
 //     * @return Quack[] Returns an array of Quack objects
 //     */

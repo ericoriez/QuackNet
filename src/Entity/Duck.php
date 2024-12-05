@@ -51,9 +51,12 @@ class Duck implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Quack::class, mappedBy: 'author')]
     private Collection $quacks;
 
+
+
     public function __construct()
     {
         $this->quacks = new ArrayCollection();
+
     }
 
     public function getId(): ?int
@@ -92,7 +95,8 @@ class Duck implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $roles = $this->roles;
         // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
+
+
 
         return array_unique($roles);
     }
@@ -196,4 +200,5 @@ class Duck implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
 }

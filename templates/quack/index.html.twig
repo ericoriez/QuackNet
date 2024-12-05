@@ -14,6 +14,9 @@
     {% if app.user %}
         <div id="name">
             <h2>Hello {{ app.user.duckname }} </h2>
+            {% for role in app.user.roles %}
+                <p>{{ role }}</p>
+            {% endfor %}
             <button><a href="{{ path('app_logout') }}"><i class="fa-solid fa-right-from-bracket"></i>Logout</a></button>
         </div>
     {% endif %}
@@ -33,6 +36,7 @@
         </thead>
         <tbody>
         {% for quack in quacks %}
+
             <tr>
 {#                <td>{{ quack.id }}</td>#}
                 <td>
@@ -59,6 +63,13 @@
                 <td>
                     <button><a href="{{ path('app_quack_show', {'id': quack.id}) }}">show</a></button>
                     <button><a href="{{ path('app_quack_edit', {'id': quack.id}) }}">edit</a></button>
+
+                    {% if is_granted('QUACK_MODERATE', quack) %}
+                        <form method="post" action="{{ path('app_quack_moderate', {'id': quack.id}) }}" style="display:inline;">
+                            <input type="hidden" name="_token" value="{{ csrf_token('moderate' ~ quack.id) }}">
+                            <button class="btn btn-warning">Masquer</button>
+                        </form>
+                    {% endif %}
                 </td>
             </tr>
 {#            #}{# Afficher les commentaires liés (replies) #}
@@ -83,6 +94,7 @@
 {#                </td>#}
 {#            </tr>#}
         {% else %}
+
             <tr>
                 <td colspan="4">no records found</td>
             </tr>
