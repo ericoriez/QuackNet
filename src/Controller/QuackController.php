@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Quack;
 use App\Form\CommentType;
 use App\Form\QuackType;
+use App\Form\SearchType;
 use App\Repository\QuackRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -15,11 +16,27 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/quack')]
 final class QuackController extends AbstractController
 {
-    #[Route(name: 'app_quack_index', methods: ['GET'])]
-    public function index(QuackRepository $quackRepository): Response
+    #[Route(name: 'app_quack_index', methods: ['GET', 'POST'])]
+    public function index(Request $request, QuackRepository $quackRepository): Response
     {
+        // Créer le formulaire de recherche
+        $form = $this->createForm(SearchType::class);
+        $form->handleRequest($request);
+
+        // Quacks visibles par défaut
+        $quacks = $quackRepository->findVisibleQuacks();
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            $keyword = $data['query'];
+
+            // Rechercher uniquement parmi les quacks visibles
+            $quacks = $quackRepository->searchVisibleQuacks($keyword);
+        }
+
         return $this->render('quack/index.html.twig', [
-            'quacks' => $quackRepository->findVisibleQuacks(),
+            'quacks' => $quacks,
+            'form' => $form->createView(),
         ]);
     }
 
@@ -31,7 +48,11 @@ final class QuackController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $quack->setAuthor($this->getUser());
+            $user = $this->getUser();
+            if (!$user) {
+                throw $this->createAccessDeniedException('Vous devez être connecté pour créer un quack.');
+            }
+            $quack->setAuthor($user);
             $quack->setCreatedAt(new \DateTime());
 
             $photoFile = $form->get('photo')->getData();
@@ -63,6 +84,7 @@ final class QuackController extends AbstractController
         $comment = new Quack();
         $comment->setParent($quack); // Définit le quack parent
         $comment->setAuthor($this->getUser()); // Définit l'utilisateur connecté comme auteur
+        $comment->setIsComment(true);
 
         // Formulaire pour le commentaire
         $form = $this->createForm(CommentType::class, $comment);

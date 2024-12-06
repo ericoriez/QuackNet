@@ -30,14 +30,14 @@ class QuackType extends AbstractType
                 'multiple' => true, // Permet de sélectionner plusieurs tags
                 'expanded' => true, // Affiche les options comme des cases à cocher
                 'label' => 'Tags associés',
-            ])
-            ->add('parent', EntityType::class, [
-                'class' => Quack::class,
-                'choice_label' => 'content', // Affiche le contenu du quack parent
-                'required' => false, // Permet de ne pas avoir de parent (quack principal)
-                'placeholder' => 'Aucun parent', // Texte par défaut si aucun parent n'est sélectionné
-                'label' => 'Quack parent (optionnel)',
             ]);
+//            ->add('parent', EntityType::class, [
+//                'class' => Quack::class,
+//                'choice_label' => 'content', // Affiche le contenu du quack parent
+//                'required' => false, // Permet de ne pas avoir de parent (quack principal)
+//                'placeholder' => 'Aucun parent', // Texte par défaut si aucun parent n'est sélectionné
+//                'label' => 'Quack parent (optionnel)',
+//            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

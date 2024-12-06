@@ -1,11 +1,47 @@
 {% extends 'base.html.twig' %}
-
-{% block title %}New Quack{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/quack/new.css') }}">
+{% endblock %}
+{% block title %}Créer un nouveau Quack{% endblock %}
 
 {% block body %}
-    <h1>Create new Quack</h1>
+    <div class="container my-5">
+        <h1 class="text-center">Créer un nouveau CoinCoin</h1>
 
-    {{ include('quack/_form.html.twig') }}
+        <div class="card shadow p-4">
+            {{ form_start(form) }}
 
-    <a href="{{ path('app_quack_index') }}">back to list</a>
+            <div class="form-group mb-3">
+                {{ form_label(form.content, 'Message', {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.content, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(form.content) }}
+            </div>
+
+            <div class="form-group mb-3">
+                {{ form_label(form.photo, 'Ajouter une photo', {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.photo, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(form.photo) }}
+            </div>
+
+            <div class="form-group mb-3">
+                {{ form_label(form.tags, 'Tags associés', {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.tags, {'attr': {'class': 'form-check-input'}}) }}
+                {{ form_errors(form.tags) }}
+            </div>
+
+{#            <div class="form-group mb-3">#}
+{#                {{ form_label(form.parent, 'Quack parent (optionnel)', {'label_attr': {'class': 'form-label'}}) }}#}
+{#                {{ form_widget(form.parent, {'attr': {'class': 'form-control'}}) }}#}
+{#                {{ form_errors(form.parent) }}#}
+{#            </div>#}
+
+            <div class="text-center">
+                <button class="btn btn-primary btn-lg">Créer le CoinCoin</button>
+                <a href="{{ path('app_quack_index') }}" class="btn btn-secondary btn-lg">Retour à la liste</a>
+            </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
 {% endblock %}

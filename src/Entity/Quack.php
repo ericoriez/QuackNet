@@ -20,7 +20,7 @@ class Quack
     private ?string $content = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $created_at;
+    private ?\DateTimeInterface $createdAt;
 
     #[ORM\ManyToOne(inversedBy: 'quacks')]
     #[ORM\JoinColumn(nullable: false)]
@@ -48,9 +48,13 @@ class Quack
     private bool $isModerated = false;
 
 
+    #[ORM\Column(type: 'boolean')]
+    private bool $isComment = false;
+
+
     public function __construct()
     {
-        $this->created_at = new \DateTime();
+        $this->createdAt = new \DateTime();
         $this->tags = new ArrayCollection();
         $this->replies = new ArrayCollection();
     }
@@ -75,12 +79,12 @@ class Quack
 
     public function getCreatedAt(): ?\DateTimeInterface
     {
-        return $this->created_at;
+        return $this->createdAt;
     }
 
     public function setCreatedAt(\DateTimeInterface $created_at): static
     {
-        $this->created_at = $created_at;
+        $this->createdAt = $created_at;
 
         return $this;
     }
@@ -187,4 +191,16 @@ class Quack
         return $this;
     }
 
+
+    public function isComment(): bool
+    {
+        return $this->isComment;
+    }
+
+    public function setIsComment(bool $isComment): self
+    {
+        $this->isComment = $isComment;
+
+        return $this;
+    }
 }

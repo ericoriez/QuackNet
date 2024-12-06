@@ -4,12 +4,20 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('styles/quack/index.css') }}"
+    <link rel="stylesheet" href="{{ asset('styles/quack/index.css') }}">
 {% endblock %}
 
 {% block body %}
+    <h2>Rechercher des CoinCoins</h2>
+    {{ form_start(form) }}
+    {{ form_widget(form.query, { 'attr': {'class': 'form-control', 'placeholder': 'Rechercher par auteur ou tag...'} }) }}
+    {{ form_errors(form.query) }}
+    <button class="btn btn-primary mt-2">Rechercher</button>
+    {{ form_end(form) }}
 
-{#    <h1>CoinsCoins</h1>#}
+    {% if quacks is empty %}
+        <p>Aucun résultat trouvé pour votre recherche.</p>
+    {% endif %}
 
     {% if app.user %}
         <div id="name">
@@ -21,48 +29,26 @@
         </div>
     {% endif %}
 
-    <button><a href="{{ path('app_quack_new') }}">Create new</a></button>
-    <table class="table">
-        <thead>
-            <tr>
-{#                <th>Id</th>#}
-                <th>Auteur</th>
-                <th>Content</th>
-                <th>Photo</th>
-                <th>Tags</th>
-                <th>Created_at</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
+    <button><a href="{{ path('app_quack_new') }}">Créer un nouveau CoinCoin</a></button>
+
+    <div class="quack-list">
         {% for quack in quacks %}
-
-            <tr>
-{#                <td>{{ quack.id }}</td>#}
-                <td>
-
-                    {% if quack.author %}
-                        {{ quack.author.duckname }}
-                    {% else %}
-                        Aucun auteur
-                    {% endif %}
-                </td>
-                <td>{{ quack.content }}</td>
-                <td>
-                    {% if quack.photo %}
-                        <img src="{{ asset('uploads/' ~ quack.photo) }}" alt="Photo du quack" style="max-width: 300px;">
-                    {% endif %}
-                </td>
-                <td>Tags :
+            <div class="quack-box">
+                <h3>Auteur : {{ quack.author ? quack.author.duckname : 'Anonyme' }}</h3>
+                <p>Contenu : {{ quack.content }}</p>
+                {% if quack.photo %}
+                    <img src="{{ asset('uploads/' ~ quack.photo) }}" alt="Photo du quack" style="max-width: 300px;">
+                {% endif %}
+                <p>Tags :
                     {% for tag in quack.tags %}
                         <span>#{{ tag.name }}</span>
                     {% endfor %}
-                </td>
-                <td>{{ quack.createdAt ? quack.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+                </p>
+                <p>Date : {{ quack.createdAt|date('Y-m-d H:i:s') }}</p>
 
-                <td>
-                    <button><a href="{{ path('app_quack_show', {'id': quack.id}) }}">show</a></button>
-                    <button><a href="{{ path('app_quack_edit', {'id': quack.id}) }}">edit</a></button>
+                <div class="quack-actions">
+                    <button><a href="{{ path('app_quack_show', {'id': quack.id}) }}">Voir</a></button>
+                    <button><a href="{{ path('app_quack_edit', {'id': quack.id}) }}">Modifier</a></button>
 
                     {% if is_granted('QUACK_MODERATE', quack) %}
                         <form method="post" action="{{ path('app_quack_moderate', {'id': quack.id}) }}" style="display:inline;">
@@ -70,36 +56,27 @@
                             <button class="btn btn-warning">Masquer</button>
                         </form>
                     {% endif %}
-                </td>
-            </tr>
-{#            #}{# Afficher les commentaires liés (replies) #}
-{#            <tr>#}
-{#                <td colspan="6">#}
-{#                    <div class="comments">#}
-{#                        <h4>Commentaires :</h4>#}
-{#                        {% if quack.replies|length > 0 %}#}
-{#                            {% for reply in quack.replies %}#}
-{#                                <div class="comment">#}
-{#                                    <p>{{ reply.content }}</p>#}
-{#                                    <small>#}
-{#                                        Par : {{ reply.author ? reply.author.duckname : 'Utilisateur inconnu' }}#}
-{#                                        - {{ reply.createdAt|date('Y-m-d H:i:s') }}#}
-{#                                    </small>#}
-{#                                </div>#}
-{#                            {% endfor %}#}
-{#                        {% else %}#}
-{#                            <p>Aucun commentaire pour ce quack.</p>#}
-{#                        {% endif %}#}
-{#                    </div>#}
-{#                </td>#}
-{#            </tr>#}
+                </div>
+
+                <div class="comments-section">
+                    <h4>Commentaires :</h4>
+                    {% if quack.replies|length > 0 %}
+                        {% for reply in quack.replies %}
+                            <div class="comment">
+                                <p>{{ reply.content }}</p>
+                                <small>
+                                    Par : {{ reply.author ? reply.author.duckname : 'Anonyme' }} -
+                                    {{ reply.createdAt|date('Y-m-d H:i:s') }}
+                                </small>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p>Aucun commentaire pour ce CoinCoin.</p>
+                    {% endif %}
+                </div>
+            </div>
         {% else %}
-
-            <tr>
-                <td colspan="4">no records found</td>
-            </tr>
+            <p>Aucun CoinCoin trouvé.</p>
         {% endfor %}
-        </tbody>
-    </table>
-
+    </div>
 {% endblock %}

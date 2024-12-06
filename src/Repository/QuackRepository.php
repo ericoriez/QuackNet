@@ -19,7 +19,7 @@ class QuackRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('q')
             ->where('q.parent IS NULL') // Filtre pour les quacks sans parent
-            ->orderBy('q.created_at', 'DESC') // Tri par date de création
+            ->orderBy('q.createdAt', 'DESC') // Tri par date de création
             ->getQuery()
             ->getResult(); // Retourne une liste
     }
@@ -39,7 +39,7 @@ class QuackRepository extends ServiceEntityRepository
             ->join('q.tags', 't') // Joint la table des tags
             ->where('t.name = :tagName')
             ->setParameter('tagName', $tagName)
-            ->orderBy('q.created_at', 'DESC')
+            ->orderBy('q.createdAt', 'DESC')
             ->getQuery()
             ->getResult();
     }
@@ -48,10 +48,42 @@ class QuackRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('q')
             ->andWhere('q.isModerated = false')
-            ->orderBy('q.created_at', 'DESC')
+            ->andWhere('q.isComment = false') // Exclut les commentaires
+            ->orderBy('q.createdAt', 'DESC')
             ->getQuery()
             ->getResult();
     }
+
+    public function searchByKeyword(string $keyword): array
+    {
+        return $this->createQueryBuilder('q')
+            ->leftJoin('q.author', 'a')
+            ->leftJoin('q.tags', 't')
+            ->where('a.duckname LIKE :keyword')
+            ->orWhere('t.name LIKE :keyword')
+            ->setParameter('keyword', '%' . $keyword . '%')
+            ->getQuery()
+            ->getResult();
+    }
+    /**
+     * Recherche des quacks visibles avec un mot-clé.
+     *
+     * @param string $keyword Le mot-clé à rechercher.
+     * @return Quack[]
+     */
+    public function searchVisibleQuacks(string $keyword): array
+    {
+        return $this->createQueryBuilder('q')
+            ->leftJoin('q.author', 'a')
+            ->leftJoin('q.tags', 't')
+            ->where('q.isModerated = false') // Filtrer les quacks non modérés
+            ->andWhere('a.duckname LIKE :keyword OR t.name LIKE :keyword OR q.content LIKE :keyword')
+            ->setParameter('keyword', '%' . $keyword . '%')
+            ->orderBy('q.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
 //    /**
 //     * @return Quack[] Returns an array of Quack objects
 //     */
